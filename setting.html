@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - ANPR System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s ease;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Content Section */
+        .content {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            transition: filter 0.4s ease;
+            z-index: 1;
+        }
+
+        .content.blurred {
+            filter: blur(5px);
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            color: #4dabf7;
+        }
+
+        /* Hamburger Menu */
+        .hamburger {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 21px;
+            cursor: pointer;
+            z-index: 101;
+        }
+
+        .hamburger span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background-color: white;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: translateY(9px) rotate(45deg);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: translateY(-9px) rotate(-45deg);
+        }
+
+        /* Menu Overlay */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            right: -50%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to bottom, #2c3e50, #1a2530);
+            color: white;
+            transition: right 0.4s ease;
+            z-index: 99;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+        }
+
+        .menu-overlay.active {
+            right: 0;
+        }
+
+        .menu-header {
+            padding: 30px 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #4dabf7;
+        }
+
+        .close-menu {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: none;
+        }
+
+        .menu-content {
+            padding: 20px 25px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-items {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .menu-items li {
+            margin-bottom: 10px;
+        }
+
+        .menu-items a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .menu-items a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .menu-items a.active {
+            background: rgba(77, 171, 247, 0.2);
+            border-left: 3px solid #4dabf7;
+        }
+
+        .menu-items a i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .menu-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 15px 0;
+        }
+
+        .auth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: auto;
+            padding-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-login {
+            background: #4dabf7;
+            color: white;
+        }
+
+        .btn-login:hover {
+            background: #339af0;
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Settings Content */
+        .settings-container {
+            margin-top: 80px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+        }
+
+        .settings-header {
+            color: white;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .settings-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .settings-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        .settings-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .settings-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 30px 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .settings-btn i {
+            font-size: 2.5rem;
+            color: #4dabf7;
+        }
+
+        .settings-btn span {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transform: translateY(-50px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-title i {
+            color: #4dabf7;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+            transition: color 0.3s;
+        }
+
+        .close-modal:hover {
+            color: #2c3e50;
+        }
+
+        .modal-content {
+            margin-bottom: 25px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+
+        .modal-btn-cancel:hover {
+            background: #5a6268;
+        }
+
+        .modal-btn-confirm {
+            background: #4dabf7;
+            color: white;
+        }
+
+        .modal-btn-confirm:hover {
+            background: #339af0;
+        }
+
+        /* Theme Modal Content */
+        .theme-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .theme-option {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .theme-option:hover {
+            border-color: #4dabf7;
+        }
+
+        .theme-option.active {
+            border-color: #4dabf7;
+            background: rgba(77, 171, 247, 0.1);
+        }
+
+        .theme-preview {
+            width: 100%;
+            height: 60px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .theme-name {
+            text-align: center;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        /* Privacy Modal Content */
+        .privacy-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .privacy-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .privacy-info {
+            color: #2c3e50;
+        }
+
+        .privacy-label {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .privacy-desc {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        /* Toggle Switch */
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #4dabf7;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Addition Modal Content */
+        .addition-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        /* Recent Activity Modal Content */
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(77, 171, 247, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4dabf7;
+        }
+
+        .activity-details {
+            flex: 1;
+            color: #2c3e50;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .activity-time {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        /* Logout Modal Content */
+        .logout-content {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .logout-icon {
+            font-size: 4rem;
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+
+        .logout-message {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .logout-detail {
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            background: rgba(0, 0, 0, 0.2);
+            margin-top: 30px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .menu-overlay {
+                width: 60%;
+                right: -60%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .menu-overlay {
+                width: 80%;
+                right: -80%;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .settings-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .menu-overlay {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .close-menu {
+                display: block;
+            }
+            
+            .settings-container {
+                margin-top: 60px;
+            }
+            
+            .settings-header h1 {
+                font-size: 2rem;
+            }
+            
+            .theme-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+        </div>
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="content">
+            <div class="settings-container">
+                <div class="settings-header">
+                    <h1>System Settings</h1>
+                    <p>Manage your preferences and system configuration</p>
+                </div>
+                
+                <div class="settings-buttons">
+                    <div class="settings-btn" id="theme-btn">
+                        <i class="fas fa-palette"></i>
+                        <span>Theme</span>
+                    </div>
+                    
+                    <div class="settings-btn" id="privacy-btn">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Privacy</span>
+                    </div>
+                    
+                    <div class="settings-btn" id="addition-btn">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Addition</span>
+                    </div>
+                    
+                    <div class="settings-btn" id="activity-btn">
+                        <i class="fas fa-history"></i>
+                        <span>Recent Activity</span>
+                    </div>
+                    
+                    <div class="settings-btn" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Modal -->
+    <div class="modal-overlay" id="theme-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-palette"></i>
+                    Theme Settings
+                </h2>
+                <button class="close-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <p>Choose your preferred theme:</p>
+                <div class="theme-options">
+                    <div class="theme-option active">
+                        <div class="theme-preview" style="background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);"></div>
+                        <div class="theme-name">Sunset</div>
+                    </div>
+                    <div class="theme-option">
+                        <div class="theme-preview" style="background: linear-gradient(135deg, #2c3e50, #4ca1af);"></div>
+                        <div class="theme-name">Ocean</div>
+                    </div>
+                    <div class="theme-option">
+                        <div class="theme-preview" style="background: linear-gradient(135deg, #667eea, #764ba2);"></div>
+                        <div class="theme-name">Purple</div>
+                    </div>
+                    <div class="theme-option">
+                        <div class="theme-preview" style="background: linear-gradient(135deg, #4facfe, #00f2fe);"></div>
+                        <div class="theme-name">Ice Blue</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel">Cancel</button>
+                <button class="modal-btn modal-btn-confirm">Apply Theme</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Modal -->
+    <div class="modal-overlay" id="privacy-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-shield-alt"></i>
+                    Privacy Settings
+                </h2>
+                <button class="close-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <p>Manage your privacy preferences:</p>
+                <div class="privacy-options">
+                    <div class="privacy-option">
+                        <div class="privacy-info">
+                            <div class="privacy-label">Data Collection</div>
+                            <div class="privacy-desc">Allow anonymous usage data collection</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="privacy-option">
+                        <div class="privacy-info">
+                            <div class="privacy-label">Location Tracking</div>
+                            <div class="privacy-desc">Enable GPS for captured vehicles</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="privacy-option">
+                        <div class="privacy-info">
+                            <div class="privacy-label">Cloud Storage</div>
+                            <div class="privacy-desc">Backup data to secure cloud servers</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel">Cancel</button>
+                <button class="modal-btn modal-btn-confirm">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Addition Modal -->
+    <div class="modal-overlay" id="addition-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-plus-circle"></i>
+                    Add to Allow List
+                </h2>
+                <button class="close-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <p>Add a new license plate to the allow list:</p>
+                <div class="addition-form">
+                    <div class="form-group">
+                        <label for="plate-number">License Plate Number</label>
+                        <input type="text" id="plate-number" placeholder="e.g., ABC 1234">
+                    </div>
+                    <div class="form-group">
+                        <label for="vehicle-type">Vehicle Type</label>
+                        <select id="vehicle-type">
+                            <option value="car">Car</option>
+                            <option value="truck">Truck</option>
+                            <option value="motorcycle">Motorcycle</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">Notes (Optional)</label>
+                        <input type="text" id="notes" placeholder="Additional information">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel">Cancel</button>
+                <button class="modal-btn modal-btn-confirm">Add to List</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Modal -->
+    <div class="modal-overlay" id="activity-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-history"></i>
+                    Recent Activity
+                </h2>
+                <button class="close-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <p>Your recent system activities:</p>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Vehicle ABC 1234 detected</div>
+                            <div class="activity-time">2 minutes ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">System settings updated</div>
+                            <div class="activity-time">1 hour ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-list"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Allow list modified</div>
+                            <div class="activity-time">3 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Database backup completed</div>
+                            <div class="activity-time">1 day ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div class="modal-overlay" id="logout-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </h2>
+                <button class="close-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <div class="logout-content">
+                    <div class="logout-icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <div class="logout-message">Are you sure you want to logout?</div>
+                    <div class="logout-detail">You will need to login again to access the system.</div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel">Cancel</button>
+                <button class="modal-btn modal-btn-confirm"><a href="login.html">Yes, Logout</a></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-overlay">
+        <div class="menu-header">
+            <div class="menu-title">Menu</div>
+            <button class="close-menu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="menu-content">
+            <ul class="menu-items">
+                <li>
+                    <a href="index.html">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="contact.html">
+                        <i class="fas fa-envelope"></i>
+                        <span>Contact</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fas fa-robot"></i>
+                        <span>Aora AI</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fas fa-search"></i>
+                        <span>Explore</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fas fa-book"></i>
+                        <span>Library</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="settings.html" class="active">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="menu-divider"></div>
+            
+            <div class="auth-buttons">
+                <button class="btn btn-login">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login</span>
+                </button>
+                <button class="btn btn-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <a href="login.html"><span>Logout</span></a>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>ANPR System Settings &copy; 2023</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.querySelector('.hamburger');
+            const content = document.querySelector('.content');
+            const menuOverlay = document.querySelector('.menu-overlay');
+            const closeMenu = document.querySelector('.close-menu');
+
+            // Toggle menu
+            function toggleMenu() {
+                hamburger.classList.toggle('active');
+                content.classList.toggle('blurred');
+                menuOverlay.classList.toggle('active');
+            }
+
+            hamburger.addEventListener('click', toggleMenu);
+            
+            closeMenu.addEventListener('click', toggleMenu);
+
+            // Close menu when clicking on blurred content
+            content.addEventListener('click', function() {
+                if (menuOverlay.classList.contains('active')) {
+                    toggleMenu();
+                }
+            });
+
+            // Close menu on escape key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && menuOverlay.classList.contains('active')) {
+                    toggleMenu();
+                }
+            });
+
+            // Modal functionality
+            const themeBtn = document.getElementById('theme-btn');
+            const privacyBtn = document.getElementById('privacy-btn');
+            const additionBtn = document.getElementById('addition-btn');
+            const activityBtn = document.getElementById('activity-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            const themeModal = document.getElementById('theme-modal');
+            const privacyModal = document.getElementById('privacy-modal');
+            const additionModal = document.getElementById('addition-modal');
+            const activityModal = document.getElementById('activity-modal');
+            const logoutModal = document.getElementById('logout-modal');
+            
+            const closeModalButtons = document.querySelectorAll('.close-modal');
+            const cancelButtons = document.querySelectorAll('.modal-btn-cancel');
+            
+            // Open modals
+            themeBtn.addEventListener('click', () => openModal(themeModal));
+            privacyBtn.addEventListener('click', () => openModal(privacyModal));
+            additionBtn.addEventListener('click', () => openModal(additionModal));
+            activityBtn.addEventListener('click', () => openModal(activityModal));
+            logoutBtn.addEventListener('click', () => openModal(logoutModal));
+            
+            // Close modals
+            closeModalButtons.forEach(button => {
+                button.addEventListener('click', closeAllModals);
+            });
+            
+            cancelButtons.forEach(button => {
+                button.addEventListener('click', closeAllModals);
+            });
+            
+            // Close modal when clicking outside
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeAllModals();
+                    }
+                });
+            });
+            
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeAllModals();
+                }
+            });
+            
+            function openModal(modal) {
+                closeAllModals();
+                modal.classList.add('active');
+                content.classList.add('blurred');
+            }
+            
+            function closeAllModals() {
+                document.querySelectorAll('.modal-overlay').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+                content.classList.remove('blurred');
+            }
+            
+            // Theme selection
+            const themeOptions = document.querySelectorAll('.theme-option');
+            themeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    themeOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Apply theme functionality
+            document.querySelectorAll('.modal-btn-confirm').forEach(button => {
+                button.addEventListener('click', function() {
+                    // In a real app, you would save the settings here
+                    alert('Settings saved successfully!');
+                    closeAllModals();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

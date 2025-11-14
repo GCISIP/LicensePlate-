@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Secure Gate System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: filter 0.4s ease;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Content Section */
+        .content {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            transition: filter 0.4s ease;
+            z-index: 1;
+        }
+
+        .content.blurred {
+            filter: blur(5px);
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            color: #4dabf7;
+        }
+
+        /* Hamburger Menu */
+        .hamburger {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 21px;
+            cursor: pointer;
+            z-index: 101;
+        }
+
+        .hamburger span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background-color: white;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: translateY(9px) rotate(45deg);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: translateY(-9px) rotate(-45deg);
+        }
+
+        /* Menu Overlay */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            right: -50%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to bottom, #2c3e50, #1a2530);
+            color: white;
+            transition: right 0.4s ease;
+            z-index: 99;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+        }
+
+        .menu-overlay.active {
+            right: 0;
+        }
+
+        .menu-header {
+            padding: 30px 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #4dabf7;
+        }
+
+        .close-menu {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: none;
+        }
+
+        .menu-content {
+            padding: 20px 25px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-items {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .menu-items li {
+            margin-bottom: 10px;
+        }
+
+        .menu-items a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .menu-items a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .menu-items a.active {
+            background: rgba(77, 171, 247, 0.2);
+            border-left: 3px solid #4dabf7;
+        }
+
+        .menu-items a i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .menu-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 15px 0;
+        }
+
+        .auth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: auto;
+            padding-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-login {
+            background: #4dabf7;
+            color: white;
+        }
+
+        .btn-login:hover {
+            background: #339af0;
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Contact Content */
+        .contact-container {
+            margin-top: 80px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+        }
+
+        .contact-header {
+            color: white;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .contact-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .contact-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        /* Contact Card */
+        .contact-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .impacts-section {
+            margin-bottom: 30px;
+        }
+
+        .impacts-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .impacts-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .manna-know {
+            font-size: 1.1rem;
+            color: #4dabf7;
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .context-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .context-title {
+            font-size: 1.3rem;
+            color: white;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .contact-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .contact-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+        }
+
+        .contact-value {
+            color: white;
+            font-weight: 500;
+        }
+
+        .phone-number {
+            font-size: 1.3rem;
+            color: #4dabf7;
+            font-weight: bold;
+        }
+
+        .website-link {
+            color: #4dabf7;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .website-link:hover {
+            color: #339af0;
+            text-decoration: underline;
+        }
+
+        /* Social Media Section */
+        .social-section {
+            margin-top: 30px;
+        }
+
+        .social-title {
+            font-size: 1.3rem;
+            color: white;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .social-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s;
+        }
+
+        .social-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .social-platform {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-weight: 500;
+        }
+
+        .social-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .whatsapp .social-icon {
+            background: #25D366;
+        }
+
+        .facebook .social-icon {
+            background: #1877F2;
+        }
+
+        .youtube .social-icon {
+            background: #FF0000;
+        }
+
+        .twitter .social-icon {
+            background: #1DA1F2;
+        }
+
+        .social-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .social-link {
+            color: #4dabf7;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .social-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .social-close {
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .social-close:hover {
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            background: rgba(0, 0, 0, 0.2);
+            margin-top: 30px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .menu-overlay {
+                width: 60%;
+                right: -60%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .menu-overlay {
+                width: 80%;
+                right: -80%;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .social-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .menu-overlay {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .close-menu {
+                display: block;
+            }
+            
+            .contact-container {
+                margin-top: 60px;
+            }
+            
+            .contact-header h1 {
+                font-size: 2rem;
+            }
+            
+            .impacts-title {
+                font-size: 1.7rem;
+            }
+            
+            .phone-number {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-shield-alt"></i>
+            <span>Secure Gate System</span>
+        </div>
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="content">
+            <div class="contact-container">
+                <div class="contact-header">
+                    <h1>Contact Us</h1>
+                    <p>Get in touch with our secure gate system team</p>
+                </div>
+                
+                <div class="contact-card">
+                    <!-- Impacts Section -->
+                    <div class="impacts-section">
+                        <div class="impacts-title">Impacts</div>
+                        <div class="impacts-subtitle">Manna know us!</div>
+                        <div class="impacts-subtitle">This website is a secure website for secure/late hybrid gate system.</div>
+                        <div class="manna-know">[Manna know]</div>
+                    </div>
+                    
+                    <!-- Context Section -->
+                    <div class="context-section">
+                        <div class="context-title">Contexts VS On 8</div>
+                        <div class="contact-info">
+                            <div class="contact-item">
+                                <div class="contact-label">Phone:</div>
+                                <div class="contact-value phone-number">0802533351</div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-label">Website:</div>
+                                <a href="http://log.mc" class="contact-value website-link" target="_blank">http://log.mc</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Social Media Section -->
+                    <div class="social-section">
+                        <div class="social-title">Connect With Us</div>
+                        <div class="social-grid">
+                            <!-- WhatsApp -->
+                            <div class="social-item whatsapp">
+                                <div class="social-platform">
+                                    <div class="social-icon">
+                                        <i class="fab fa-whatsapp"></i>
+                                    </div>
+                                    <span>WhatsApp</span>
+                                </div>
+                                <div class="social-actions">
+                                    <a href="https://wa.me/0802533351" class="social-link" target="_blank">Link</a>
+                                    <div class="social-close">X</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Facebook -->
+                            <div class="social-item facebook">
+                                <div class="social-platform">
+                                    <div class="social-icon">
+                                        <i class="fab fa-facebook-f"></i>
+                                    </div>
+                                    <span>Facebook</span>
+                                </div>
+                                <div class="social-actions">
+                                    <a href="#" class="social-link" target="_blank">Link</a>
+                                    <div class="social-close">X</div>
+                                </div>
+                            </div>
+                            
+                            <!-- YouTube -->
+                            <div class="social-item youtube">
+                                <div class="social-platform">
+                                    <div class="social-icon">
+                                        <i class="fab fa-youtube"></i>
+                                    </div>
+                                    <span>YouTube</span>
+                                </div>
+                                <div class="social-actions">
+                                    <a href="#" class="social-link" target="_blank">Link</a>
+                                    <div class="social-close">X</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Twitter -->
+                            <div class="social-item twitter">
+                                <div class="social-platform">
+                                    <div class="social-icon">
+                                        <i class="fab fa-twitter"></i>
+                                    </div>
+                                    <span>Twitter</span>
+                                </div>
+                                <div class="social-actions">
+                                    <a href="#" class="social-link" target="_blank">Link</a>
+                                    <div class="social-close">X</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-overlay">
+        <div class="menu-header">
+            <div class="menu-title">Menu</div>
+            <button class="close-menu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="menu-content">
+            <ul class="menu-items">
+                <li>
+                    <a href="index.html">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="contact.html" class="active">
+                        <i class="fas fa-envelope"></i>
+                        <span>Contact</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fas fa-robot"></i>
+                        <span>Aora AI</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fas fa-search"></i>
+                        <span>Explore</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fas fa-book"></i>
+                        <span>Library</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="setting.html">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="menu-divider"></div>
+            
+            <div class="auth-buttons">
+                <button class="btn btn-login">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login</span>
+                </button>
+                <button class="btn btn-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <a href="login.html"><span>Logout</span></a>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Secure Gate System &copy; 2023 | Manna Know Us</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.querySelector('.hamburger');
+            const content = document.querySelector('.content');
+            const menuOverlay = document.querySelector('.menu-overlay');
+            const closeMenu = document.querySelector('.close-menu');
+
+            // Toggle menu
+            function toggleMenu() {
+                hamburger.classList.toggle('active');
+                content.classList.toggle('blurred');
+                menuOverlay.classList.toggle('active');
+            }
+
+            hamburger.addEventListener('click', toggleMenu);
+            
+            closeMenu.addEventListener('click', toggleMenu);
+
+            // Close menu when clicking on blurred content
+            content.addEventListener('click', function() {
+                if (menuOverlay.classList.contains('active')) {
+                    toggleMenu();
+                }
+            });
+
+            // Close menu on escape key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && menuOverlay.classList.contains('active')) {
+                    toggleMenu();
+                }
+            });
+
+            // Social media close buttons
+            document.querySelectorAll('.social-close').forEach(button => {
+                button.addEventListener('click', function() {
+                    // In a real app, this might hide the social item
+                    alert('This would remove/hide this social media option in a real application.');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
